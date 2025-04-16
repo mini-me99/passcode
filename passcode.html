@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Baby Land - Passcode Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* Full page background with a pink-blue gradient */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(45deg, #FF69B4, #00BFFF);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    /* Container that holds the content */
+    .container {
+      background: #fff;
+      border-radius: 15px;
+      padding: 30px 40px;
+      text-align: center;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1s ease-in-out;
+    }
+    h1 {
+      color: #FF69B4;
+      margin-bottom: 20px;
+    }
+    /* Styling for the displayed passcode */
+    .code {
+      font-size: 3rem;
+      color: #00BFFF;
+      margin: 20px 0;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      animation: pulse 1.5s infinite;
+    }
+    /* Countdown container (centers the SVG) */
+    .countdown-container {
+      margin: 20px auto;
+    }
+    /* Styling for the countdown timer SVG */
+    .countdown-timer {
+      display: block;
+      margin: 0 auto;
+    }
+    .background-circle {
+      stroke: #eee;
+      stroke-width: 10;
+    }
+    .progress-circle {
+      stroke: #00BFFF;
+      stroke-width: 10;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .timer-text {
+      font-size: 24px;
+      fill: #FF69B4;
+    }
+    /* Keyframes for fade-in effect */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    /* Pulse animation to subtly highlight the passcode */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    /* Subtext below the passcode (optional) */
+    .subtext {
+      font-size: 1rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Baby Land - Passcode Generator</h1>
+    <div class="code" id="passcode">258063</div>
+    <div class="countdown-container">
+      <svg class="countdown-timer" width="120" height="120" viewBox="0 0 120 120">
+        <circle class="background-circle" cx="60" cy="60" r="50" fill="none"></circle>
+        <circle class="progress-circle" cx="60" cy="60" r="50" fill="none"></circle>
+        <text x="60" y="60" text-anchor="middle" dominant-baseline="middle" class="timer-text">20</text>
+      </svg>
+    </div>
+    <div class="subtext">This code will refresh every 20 seconds</div>
+  </div>
+
+  <script>
+    // List of valid passcodes
+    const passcodes = [
+      "258063",
+      "357951",
+      "635241",
+      "963741", 
+      "759846",
+      "197564",
+      "103579",
+      "205976",
+      "376542",
+      "637452",
+      "147852",
+      "631457",
+      "515648",
+      "956784",
+      "151734"
+    ];
+    
+    let currentIndex = 0;
+    const passcodeElement = document.getElementById("passcode");
+    
+    // Countdown configuration
+    const duration = 20; // seconds
+    let timeLeft = duration;
+    let countdownInterval;
+    
+    // Get SVG elements for countdown timer
+    const timerTextElement = document.querySelector('.timer-text');
+    const progressCircle = document.querySelector('.progress-circle');
+    const radius = progressCircle.r.baseVal.value; // radius from the SVG circle
+    const circumference = 2 * Math.PI * radius;
+    
+    // Set up the stroke dasharray for full circumference
+    progressCircle.style.strokeDasharray = `${circumference}`;
+    progressCircle.style.strokeDashoffset = '0';
+    
+    // Function to update the countdown display and circle
+    function updateCountdown() {
+      // Update numeric countdown text
+      timerTextElement.textContent = timeLeft;
+      // Calculate new dashoffset value (from 0 to full circumference)
+      const offset = circumference * (1 - timeLeft / duration);
+      progressCircle.style.strokeDashoffset = offset;
+    }
+    
+    // Restart and start the countdown timer
+    function startCountdown() {
+      timeLeft = duration;
+      updateCountdown();
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        timeLeft--;
+        updateCountdown();
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+    }
+    
+    // Function to update the displayed passcode with fade transitions,
+    // then reset the countdown timer.
+    function updatePasscode() {
+      currentIndex = (currentIndex + 1) % passcodes.length;
+      // Fade-out the passcode text
+      passcodeElement.style.opacity = 0;
+      setTimeout(() => {
+        // Update passcode after fade-out
+        passcodeElement.textContent = passcodes[currentIndex];
+        passcodeElement.style.opacity = 1;
+        // Restart countdown timer for the new code
+        startCountdown();
+      }, 500);
+    }
+    
+    // Begin the countdown immediately on page load
+    startCountdown();
+    
+    // Cycle to the next passcode and restart the countdown every 20 seconds
+    setInterval(updatePasscode, 20000);
+  </script>
+</body>
+</html>
